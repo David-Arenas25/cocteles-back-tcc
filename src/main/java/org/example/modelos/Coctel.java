@@ -1,5 +1,7 @@
 package org.example.modelos;
 
+import java.util.Scanner;
+
 public abstract class Coctel {
 
     private String nombre;
@@ -11,6 +13,7 @@ public abstract class Coctel {
     private String tamaño;
     private boolean esDecorado;
     private String ingredientes;
+    static Scanner sc = new Scanner(System.in);
 
 
 
