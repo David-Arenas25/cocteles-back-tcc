@@ -5,7 +5,9 @@ import org.example.modelos.Coctel;
 
 import javax.swing.plaf.synth.SynthOptionPaneUI;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 
 public class CoctelConJugo extends Coctel implements CostoDeUnaVenta {
@@ -31,29 +33,65 @@ public class CoctelConJugo extends Coctel implements CostoDeUnaVenta {
 
     @Override
     public void calcularCostoVenta() {
-        System.out.println(STR."Ingrese la cantidad de \{this.getNombre()}");
-        String cantidad = sc.nextLine();
-        double cantidadDouble = Double.parseDouble(cantidad);
-        cantidadDouble = getPrecioUnitario() * cantidadDouble;
+        LocalDate fechaVencimiento = null;
+        System.out.println("Ingrese la cantidad de " + this.getNombre() + ":");
+        String cantidadIngresada = sc.nextLine();
+        double cantidad = Double.parseDouble(cantidadIngresada);
         LocalDate fechaHoy = LocalDate.now();
-        LocalDate fechaVencimiento = LocalDate.parse(getDiaEnQueSeVence());
-        long diferenciaDias = ChronoUnit.DAYS.between(fechaVencimiento, fechaVencimiento);
 
-        if (diferenciaDias == 3) {
-            setPrecioUnitario(cantidadDouble - getPrecioUnitario() * 0.02);
-        } else if (diferenciaDias == 2) {
-            setPrecioUnitario(cantidadDouble - getPrecioUnitario() * 0.035);
-        } else if (diferenciaDias == 1) {
-            setPrecioUnitario(cantidadDouble - getPrecioUnitario() * 0.02);
-        } else {
-            System.out.println("No hay productos perecederos");
+        String[] formatos = {
+                "yyyy/MM/dd",
+                "yyyy-MM-dd",
+                "dd/MM/yyyy",
+                "dd-MM-yyyy",
+                "yyyy/MM",
+                "yyyy-MM"
+        };
+
+        boolean formatoValido = false;
+
+        for (String formato : formatos) {
+            try {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(formato);
+
+                // Intentar con formatos que incluyen día
+                try {
+                    fechaVencimiento = LocalDate.parse(getDiaEnQueSeVence(), formatter);
+                } catch (DateTimeParseException e) {
+                    // Intentar con formatos sin día
+                    if (formato.contains("yyyy/MM") || formato.contains("yyyy-MM")) {
+                        YearMonth yearMonth = YearMonth.parse(getDiaEnQueSeVence(), formatter);
+                        fechaVencimiento = yearMonth.atDay(1); // Usar el primer día del mes
+                    } else {
+                        throw e; // Lanzar excepción si no se puede parsear
+                    }
+                }
+
+                formatoValido = true; // Se encontró un formato válido
+                break; // Salir del bucle si se pudo parsear correctamente
+            } catch (DateTimeParseException e) {
+                // Intentar con el siguiente formato
+            }
         }
 
-        System.out.println("La cantidad de " + getNombre() + "es " + cantidad);
-        System.out.println("El descuento fue de " + cantidadDouble);
-        System.out.println("El total fue de " + getPrecioUnitario());
-        System.out.println("La diferencia de dias fueron " + diferenciaDias);
+        if (!formatoValido) {
+            throw new IllegalArgumentException("Formato de fecha no soportado: " + getDiaEnQueSeVence());
+        }
 
+        long diferenciaDias = ChronoUnit.DAYS.between(fechaHoy, fechaVencimiento);
+        double costoNormal = cantidad * this.getPrecioUnitario();
+
+        if (diferenciaDias == -3) {
+            setPrecioUnitario(costoNormal - (0.02 * costoNormal));
+        } else if (diferenciaDias == -2) {
+            setPrecioUnitario(costoNormal - (0.035 * costoNormal));
+        } else if (diferenciaDias == -1) {
+            setPrecioUnitario(costoNormal - (0.05 * costoNormal));
+        } else if(diferenciaDias > 0) {
+            setPrecioUnitario(getPrecioUnitario() * cantidad);
+        }
 
     }
+
+
 }
