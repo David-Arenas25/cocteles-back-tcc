@@ -29,8 +29,6 @@ public class ShotDeAlcohol extends Coctel implements CostoDeUnaVenta {
         double cantidadDouble = Double.parseDouble(cantidad);
         setPrecioUnitario(getPrecioUnitario() * cantidadDouble);
 
-        System.out.print("El precio que vas a pagar por la compra es " + getPrecioUnitario());
-        System.out.println("La cantidad es " + cantidad);
 
 
     }
