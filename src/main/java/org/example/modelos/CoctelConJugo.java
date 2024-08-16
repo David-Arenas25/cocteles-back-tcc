@@ -36,14 +36,14 @@ public class CoctelConJugo extends Coctel implements CostoDeUnaVenta {
         double cantidadDouble = Double.parseDouble(cantidad);
         cantidadDouble = getPrecioUnitario() * cantidadDouble;
         LocalDate fechaHoy = LocalDate.now();
-        LocalDate formato = LocalDate.parse(getDiaEnQueSeVence());
-        long diferenciaDias = ChronoUnit.DAYS.between(fechaHoy, formato);
+        LocalDate fechaVencimiento = LocalDate.parse(getDiaEnQueSeVence());
+        long diferenciaDias = ChronoUnit.DAYS.between(fechaVencimiento, fechaVencimiento);
 
-        if (diferenciaDias == -3) {
+        if (diferenciaDias == 3) {
             setPrecioUnitario(cantidadDouble - getPrecioUnitario() * 0.02);
-        } else if (diferenciaDias == -2) {
+        } else if (diferenciaDias == 2) {
             setPrecioUnitario(cantidadDouble - getPrecioUnitario() * 0.035);
-        } else if (diferenciaDias == -1) {
+        } else if (diferenciaDias == 1) {
             setPrecioUnitario(cantidadDouble - getPrecioUnitario() * 0.02);
         } else {
             System.out.println("No hay productos perecederos");
