@@ -1,6 +1,4 @@
-Aquí tienes un ejemplo de un archivo README para tu proyecto "Taller Integrador TCC: Gestión de Productos de Cocteles":
 
----
 
 # Taller Integrador TCC: Gestión de Productos de Cocteles
 
